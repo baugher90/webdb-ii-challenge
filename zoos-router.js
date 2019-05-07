@@ -11,18 +11,28 @@ const knexConfig = {
 
 const db = knex(knexConfig);
 //==================================================Create Router
-router.push("/", (req, res) => {})
+router.post("/", (req, res) => {
+ 
+});
 
 //==================================================Read Router
-router.get("/", (req, res) => {})
+router.get("/", (req, res) => {
+     db(`zoos`)
+    .then(zoos => {
+      res.status(200).json(zoos);
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+});
 
 //----------------------------------Read By ID
-router.get("/:id", (req, res) => {})
+router.get("/:id", (req, res) => {});
 
 //==================================================Update Router
-router.put("/:id", (req, res) => {})
+router.put("/:id", (req, res) => {});
 
 //==================================================Delete Router
-router.delete("/:id", (req, res) => {})
+router.delete("/:id", (req, res) => {});
 
 module.exports = router;
