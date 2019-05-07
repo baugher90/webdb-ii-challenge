@@ -18,16 +18,16 @@ router.post("/", (req, res) => {
     db("zoos")
       .insert(req.body)
       .then(zoo => {
-          const [id] = zoo
+        const [id] = zoo;
         db("zoos")
           .where({ id })
           .first()
           .then(zoo => {
             res.status(201).json(zoo);
-          })
+          });
       })
       .catch(err => {
-        res.status(500).json(err);
+        res.status(500).json({message: `This Zoo couldn't get the permit`});
       });
   }
 });
@@ -39,7 +39,7 @@ router.get("/", (req, res) => {
       res.status(200).json(zoos);
     })
     .catch(err => {
-      res.status(500).json(err);
+      res.status(500).json({message: `The animals have gone wild. We could find a single Zoo.`});
     });
 });
 
@@ -52,7 +52,7 @@ router.get("/:id", (req, res) => {
       if (zoo) {
         res.status(200).json(zoo);
       } else {
-        res.status(404).json({ message: "zoo not found" });
+        res.status(404).json({ message: `Zoo ID not found` });
       }
     })
     .catch(err => {
@@ -61,9 +61,42 @@ router.get("/:id", (req, res) => {
 });
 
 //==================================================Update Router
-router.put("/:id", (req, res) => {});
+router.put("/:id", (req, res) => {
+  db("zoos")
+    .where({ id: req.params.id })
+    .update(req.body)
+    .then(count => {
+      if (count > 0) {
+        db("zoos")
+          .where({ id: req.params.id })
+          .first()
+          .then(zoo => {
+            res.status(200).json(zoo);
+          });
+      } else {
+        res.status(404).json({ message: `Zoo ID not found` });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+});
 
 //==================================================Delete Router
-router.delete("/:id", (req, res) => {});
+router.delete("/:id", (req, res) => {
+  db("zoos")
+    .where({ id: req.params.id })
+    .del()
+    .then(count => {
+      if (count > 0) {
+        res.status(204).end();
+      } else {
+        res.status(404).json({ message: `Zoo ID not found` });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ message: `PETA has won and the animals are free to roam wild.` });
+    });
+});
 
 module.exports = router;
